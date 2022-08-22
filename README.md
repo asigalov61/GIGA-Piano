@@ -1,5 +1,5 @@
 # GIGA Piano
-## Piano transformer model trained on 1.7GB of piano music
+## Piano Transformer model trained on 1.7GB of MIDI piano music
 
 [![Open In Colab][colab-badge]][colab-notebook3]
 

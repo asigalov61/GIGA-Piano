@@ -22,7 +22,7 @@ https://1drv.ms/u/s!Ao9gnMkvUA2KgZFb_PsSwy4MutfVKg?e=cJdMuc
 ```
 train_data1 = TMIDIX.Tegridy_Any_Pickle_File_Reader('./GIGA_Piano_INTs')
 ```
-### Then you can jusmp straight to TRAIN section of the colab. It should work fine and load the original training data
+### Then you can jump straight to TRAIN section of the colab. It should work fine and load the original training data
 
 ***
 

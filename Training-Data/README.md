@@ -15,6 +15,17 @@
 https://1drv.ms/u/s!Ao9gnMkvUA2KgZFb_PsSwy4MutfVKg?e=cJdMuc
 ```
 
+***
+
+## [NEW] 2.7 GB Training Data Pack (if you want to train a more capable model)
+### This will work with exsiting training code and 1024 seq_len
+
+```
+!wget --no-check-certificate -O 'GIGA-Piano-INTs.zip' "https://onedrive.live.com/download?cid=8A0D502FC99C608F&resid=8A0D502FC99C608F%2118656&authkey=AKeSKT-LYg8QkPs"
+```
+
+***
+
 ## How to use:
 
 ### Use the original training code/colab from the repo

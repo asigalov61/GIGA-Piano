@@ -19,13 +19,13 @@
 ### 2) Auto-Continuation
 ### 3) Pitches Inpainting
 ### 4) Melody Harmonization
-### 4) Notes/Chords Progressions
+### 5) Notes/Chords Progressions
 
 ***
 
 ### Composer Version
 
-### MuseNet-style interface/workflow for endless supervised continuation generation 
+### MuseNet-style workflow for endless supervised continuation generation 
 
 [![Open In Colab][colab-badge]][colab-notebook1]
 

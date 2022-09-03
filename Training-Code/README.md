@@ -9,5 +9,25 @@
 
 ***
 
+## NOTE ON THE DISPLAYED TRAINING TIME
+
+### If you want the dataloader to display accurate steps-per-epoch/training time do the following:
+
+### Replace this:
+
+```
+def __len__(self):
+        return self.data.size(0)
+```
+
+### To this:
+
+```
+def __len__(self):
+        return self.data.size(0) // self.seq_len // BATCH_SIZE
+```
+
+***
+
 ### Project Los Angeles
 ### Tegridy Code 2022

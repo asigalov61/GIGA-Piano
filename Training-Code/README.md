@@ -24,7 +24,7 @@ def __len__(self):
 
 ```
 def __len__(self):
-        return self.data.size(0) // self.seq_len // BATCH_SIZE
+        return self.data.size(0) // self.seq_len
 ```
 
 ***

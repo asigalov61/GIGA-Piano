@@ -21,5 +21,9 @@
 
 ***
 
+![sim-pos-emb](https://user-images.githubusercontent.com/56325539/189256924-e65cf255-2222-4212-ad03-72e8cc4625ba.png)
+
+***
+
 ### Project Los Angeles
 ### Tegridy Code 2022

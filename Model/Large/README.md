@@ -46,5 +46,9 @@ config = GPTConfig(128,
 
 ***
 
+![sim-pos-emb-large](https://user-images.githubusercontent.com/56325539/189256975-576f982b-83dd-4519-ad98-58bd531933ba.png)
+
+***
+
 ### Project Los Angeles
 ### Tegridy Code 2022

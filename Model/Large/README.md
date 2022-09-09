@@ -7,18 +7,10 @@
 
 ***
 
-## Some Model Stats:
-
-### Trained upon partial provided 2.6GB training data pack for 1 epochs (60k steps/~30 hours) @ 16 batches on dual A6000 GPUs
-### FLoss 0.9514 CE
-### VFloss 0.9514 CE
-### Acc 0.80 CE (5% improvement!!!)
-
-***
-
-## Model Sequence Info:
-
-### [SOS/EOS(127), dTime(0-126), Duration(1-126), MIDI Pitch(1-126)]
+## NOTE ON THE RESULTS
+### It seems that increasing number of layers does indeed help to improve the results (5% increase in accuracy)
+### Using consequitve sampling and training for only one epoch DOES NOT seem to affect the result in any negative way.
+### All this seem to produce better music output. Subjectively model plays much better compared to the original, smaller model.
 
 ***
 
@@ -36,6 +28,21 @@ config = GPTConfig(128,
                    enable_rpr=True,
                    er_len=1024)
 ```
+
+***
+
+## Some Model Stats:
+
+### Trained upon partial provided 2.6GB training data pack for 1 epochs (60k steps/~30 hours) @ 16 batches on dual A6000 GPUs
+### FLoss 0.9514 CE
+### VFloss 0.9514 CE
+### Acc 0.80 CE (5% improvement!!!)
+
+***
+
+## Model Sequence Info:
+
+### [SOS/EOS(127), dTime(0-126), Duration(1-126), MIDI Pitch(1-126)]
 
 ***
 

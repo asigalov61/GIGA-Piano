@@ -1,5 +1,5 @@
 # GIGA Piano
-## Piano Transformer model trained on 1.7GB of MIDI piano music
+## Piano Transformer model trained on 2.6GB of MIDI piano music
 
 ***
 
@@ -33,8 +33,6 @@
 [colab-badge]: <https://colab.research.google.com/assets/colab-badge.svg>
 
 ***
-
-
 
 ### Project Los Angeles
 ### Tegridy Code 2022

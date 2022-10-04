@@ -9,6 +9,10 @@
 
 ***
 
+## Please also check out SOTA Perceiver-AR Transformer Implementation for GIGA-Piano in the folder above
+
+***
+
 ## NOTE ON THE DISPLAYED TRAINING TIME
 
 ### If you want the dataloader to display accurate steps-per-epoch/training time do the following:

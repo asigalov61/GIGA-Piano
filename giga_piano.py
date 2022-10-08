@@ -548,7 +548,7 @@ else:
 for i in tqdm(range(number_of_continuation_blocks)):
 
   rand_seq = model.generate(torch.Tensor(out1[-1021:]), 
-                                            target_seq_length=1024,
+                                            target_seq_length=len(out1[-1021:])+3,
                                             temperature=temperature,
                                             stop_token=127,
                                             verbose=show_stats)

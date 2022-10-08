@@ -55,7 +55,7 @@ print('Loading needed modules. Please wait...')
 import os
 import random
 import copy
-
+import statistics
 from collections import OrderedDict
 
 from tqdm import tqdm
@@ -714,6 +714,175 @@ for i in tqdm(range(number_of_continuation_blocks)):
   out = notes[np.where(neigh.kneighbors(notes) == min(neigh.kneighbors(notes)[0]) )[1][0]]
   
   knn_melody_chords.append(out)
+
+  out1.extend(out)
+  out1.extend([127])
+
+if len(out1) != 0:
+    
+    song = out1
+    song_f = []
+    time = 0
+    dur = 0
+    vel = 0
+    pitch = 0
+    channel = 0
+
+    son = []
+
+    song1 = []
+
+    for s in song:
+      if s != 127:
+        son.append(s)
+
+      else:
+        if len(son) == 3:
+          song1.append(son)
+        son = []
+
+    song2 = []
+    cho = []
+    for s in song1:
+      if s[0] == 0:
+        cho.append(s)
+      else:
+        song2.append(cho)
+        cho = []
+        cho.append(s)
+    
+    for s in song2:
+      if len(s) > 0:
+
+        channel = 0
+
+        if simulated_or_constant_velocity:
+          if len(s) == 1:
+            vel = s[0][2] + 10
+          else:
+            vel = s[0][2] + 30
+        else:
+          vel = 90
+        
+        for ss in s:
+
+          time += ss[0] * 16
+              
+          dur = ss[1] * 32
+          
+          pitch = ss[2]
+                                    
+          song_f.append(['note', time, dur, channel, pitch, vel ])
+
+    detailed_stats = TMIDIX.Tegridy_SONG_to_MIDI_Converter(song_f,
+                                                        output_signature = 'GIGA Piano',  
+                                                        output_file_name = '/content/GIGA-Piano-Music-Composition', 
+                                                        track_name='Project Los Angeles',
+                                                        list_of_MIDI_patches=[0, 24, 32, 40, 42, 46, 56, 71, 73, 0, 53, 0, 0, 0, 0, 0],
+                                                        number_of_ticks_per_quarter=500)
+
+    print('Done!')
+
+print('Displaying resulting composition...')
+fname = '/content/GIGA-Piano-Music-Composition'
+
+pr_duration = song_f[-1][1]+song_f[-1][2]
+
+pianoroll = [[0] * pr_duration for i in range(128)]
+
+for s in song_f:
+  for i in range(s[2]):
+    try:
+      pianoroll[s[4]][i+s[1]] = s[4]
+    except:
+      pass
+  
+piano_roll = np.array(pianoroll)
+
+plt.figure(figsize=(14, 5))
+librosa.display.specshow(piano_roll, x_axis='time', y_axis='cqt_note', fmin=1, hop_length=16, sr=16000, cmap=plt.cm.hot)
+plt.title(fname)
+
+FluidSynth("/usr/share/sounds/sf2/FluidR3_GM.sf2", 16000).midi_to_audio(str(fname + '.mid'), str(fname + '.wav'))
+display(Audio(str(fname + '.wav'), rate=16000))
+
+#@title Cosine Similarity Multiple Continuation Blocks Generator
+
+#@markdown NOTE: Play with the settings to get different results
+
+custom_MIDI_or_improvisation = True #@param {type:"boolean"}
+number_of_prime_tokens = 504 #@param {type:"slider", min:32, max:512, step:8}
+number_of_continuation_blocks = 200 #@param {type:"slider", min:10, max:2000, step:10}
+number_of_memory_tokens = 256 #@param {type:"slider", min:16, max:1008, step:16}
+number_of_batches = 4 #@param {type:"slider", min:1, max:8, step:1}
+cosine_similarity_type = "Max" #@param ["Max", "Median", "Mean"]
+cosine_similarity_match_type = "Pitches" #@param ["Pitches", "Pitches-Durations"]
+temperature = 0.8 #@param {type:"slider", min:0.1, max:1, step:0.1}
+simulated_or_constant_velocity = False #@param {type:"boolean"}
+show_stats = False #@param {type:"boolean"}
+
+#===================================================================
+print('=' * 70)
+print('GIGA Piano Music Model Continuation Generator')
+print('=' * 70)
+
+print('Generation settings:')
+print('=' * 70)
+print('Number of prime tokens:', number_of_prime_tokens)
+print('Number of continuation blocks:', number_of_continuation_blocks)
+print('Model temperature:', temperature)
+
+print('=' * 70)
+print('Generating...')
+
+out1 = []
+
+if custom_MIDI_or_improvisation:
+  out1 = inputs[:number_of_prime_tokens]
+  out1.extend([127])
+else:
+  out1.extend([127])
+
+for i in tqdm(range(number_of_continuation_blocks)):
+
+  rand_seq = model.generate_batches(torch.Tensor(out1[-number_of_memory_tokens-1:]), 
+                                            target_seq_length=len(out1[-number_of_memory_tokens-1:])+3,
+                                            temperature=temperature,
+                                            num_batches=number_of_batches,
+                                            verbose=show_stats)
+    
+  out = rand_seq.cpu().tolist()
+
+  notes = []
+  
+  for i in range(len(out)):
+    notes.append(out[i][-3:])
+
+  max_cos_sims = []
+  avg_cos_sims = [] # Mean
+  med_cos_sims = []
+  
+  for j in range(len(notes)):
+    cos_sim = []
+    for i in range(len(melody_chords)):
+      
+      if cosine_similarity_match_type == 'Pitches-Durations':
+        cos_sim.append(metrics.pairwise.cosine_similarity([notes[j][1:]], [melody_chords[i][1:]])[0][0])
+      else:
+        cos_sim.append(metrics.pairwise.cosine_similarity([[notes[j][2]]], [[melody_chords[i][2]]])[0][0])
+    
+    max_cos_sims.append(max(cos_sim))
+    avg_cos_sims.append(sum(cos_sim) / len(cos_sim))
+    med_cos_sims.append(statistics.median(cos_sim))
+
+  if cosine_similarity_type == 'Max':
+    out = notes[max_cos_sims.index(max(max_cos_sims))]
+  
+  if cosine_similarity_type == 'Mean':
+    out = notes[avg_cos_sims.index(max(avg_cos_sims))]
+
+  if cosine_similarity_type == 'Median':
+    out = notes[med_cos_sims.index(max(med_cos_sims))]
 
   out1.extend(out)
   out1.extend([127])

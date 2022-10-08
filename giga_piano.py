@@ -662,7 +662,7 @@ number_of_continuation_blocks = 200 #@param {type:"slider", min:10, max:2000, st
 number_of_memory_tokens = 512 #@param {type:"slider", min:16, max:1008, step:16}
 number_of_batches = 4 #@param {type:"slider", min:1, max:8, step:1}
 refit_knn_classifier_each_iteration = False #@param {type:"boolean"}
-temperature = 1 #@param {type:"slider", min:0.1, max:1, step:0.1}
+temperature = 0.8 #@param {type:"slider", min:0.1, max:1, step:0.1}
 simulated_or_constant_velocity = False #@param {type:"boolean"}
 show_stats = False #@param {type:"boolean"}
 
@@ -682,7 +682,7 @@ print('Generating...')
 
 neigh = NearestNeighbors(n_neighbors=1)
 neigh.fit(melody_chords)
-knn_melody_chords = copy.deepcopy(melody_chords[:number_of_prime_tokens])
+knn_melody_chords = copy.deepcopy(melody_chords[:(number_of_prime_tokens // 4)])
 
 out1 = []
 

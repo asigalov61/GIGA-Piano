@@ -659,8 +659,9 @@ display(Audio(str(fname + '.wav'), rate=16000))
 custom_MIDI_or_improvisation = True #@param {type:"boolean"}
 number_of_prime_tokens = 256 #@param {type:"slider", min:32, max:512, step:8}
 number_of_continuation_blocks = 200 #@param {type:"slider", min:10, max:2000, step:10}
-number_of_memory_tokens = 512 #@param {type:"slider", min:16, max:1008, step:16}
+number_of_memory_tokens = 256 #@param {type:"slider", min:16, max:1008, step:16}
 number_of_batches = 4 #@param {type:"slider", min:1, max:8, step:1}
+knn_overfitting_threshold = 0.1 #@param {type:"slider", min:0, max:2, step:0.1}
 refit_knn_classifier_each_iteration = False #@param {type:"boolean"}
 temperature = 0.8 #@param {type:"slider", min:0.1, max:1, step:0.1}
 simulated_or_constant_velocity = False #@param {type:"boolean"}
@@ -711,7 +712,7 @@ for i in tqdm(range(number_of_continuation_blocks)):
     neigh = NearestNeighbors(n_neighbors=1)
     neigh.fit(knn_melody_chords)
 
-  out = notes[np.where(neigh.kneighbors(notes) == min(neigh.kneighbors(notes)[0]) )[1][0]]
+  out = notes[np.where(neigh.kneighbors(notes) >= np.array([knn_overfitting_threshold]))[1][0]]
   
   knn_melody_chords.append(out)
 

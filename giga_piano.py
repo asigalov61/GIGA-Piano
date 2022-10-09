@@ -66,6 +66,7 @@ import numpy as np
 from torchsummary import summary
 from sklearn import metrics
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import pairwise_distances
 
 print('Loading core modules...')
 os.chdir('/content/GIGA-Piano')
@@ -807,17 +808,18 @@ plt.title(fname)
 FluidSynth("/usr/share/sounds/sf2/FluidR3_GM.sf2", 16000).midi_to_audio(str(fname + '.mid'), str(fname + '.wav'))
 display(Audio(str(fname + '.wav'), rate=16000))
 
-#@title Cosine Similarity Multiple Continuation Blocks Generator
+from torch import pairwise_distance
+#@title Euclidian Distance Multiple Continuation Blocks Generator
 
 #@markdown NOTE: Play with the settings to get different results
 
 custom_MIDI_or_improvisation = True #@param {type:"boolean"}
 number_of_prime_tokens = 504 #@param {type:"slider", min:32, max:512, step:8}
-number_of_continuation_blocks = 200 #@param {type:"slider", min:10, max:2000, step:10}
+number_of_continuation_blocks = 100 #@param {type:"slider", min:10, max:2000, step:10}
 number_of_memory_tokens = 256 #@param {type:"slider", min:16, max:1008, step:16}
 number_of_batches = 4 #@param {type:"slider", min:1, max:8, step:1}
-cosine_similarity_type = "Max" #@param ["Max", "Median", "Mean"]
-cosine_similarity_match_type = "Pitches" #@param ["Pitches", "Pitches-Durations"]
+euclidian_distance_type = "Min" #@param ["Min", "Median", "Mean"]
+euclidian_distance_match_type = "Times-Durations-Pitches" #@param ["Times-Durations-Pitches", "Durations-Pitches", "Pitches"]
 temperature = 0.8 #@param {type:"slider", min:0.1, max:1, step:0.1}
 simulated_or_constant_velocity = False #@param {type:"boolean"}
 show_stats = False #@param {type:"boolean"}
@@ -859,31 +861,33 @@ for i in tqdm(range(number_of_continuation_blocks)):
   for i in range(len(out)):
     notes.append(out[i][-3:])
 
-  max_cos_sims = []
-  avg_cos_sims = [] # Mean
-  med_cos_sims = []
+  min_euc_dist = []
+  avg_euc_dist = [] # Mean
+  med_euc_dist = []
   
   for j in range(len(notes)):
-    cos_sim = []
+    euc_dist = []
     for i in range(len(melody_chords)):
       
-      if cosine_similarity_match_type == 'Pitches-Durations':
-        cos_sim.append(metrics.pairwise.cosine_similarity([notes[j][1:]], [melody_chords[i][1:]])[0][0])
-      else:
-        cos_sim.append(metrics.pairwise.cosine_similarity([[notes[j][2]]], [[melody_chords[i][2]]])[0][0])
+      if euclidian_distance_match_type == 'Times-Durations-Pitches':
+        euc_dist.append(pairwise_distances([notes[j]], [melody_chords[i]])[0][0])
+      if euclidian_distance_match_type == 'Durations-Pitches':
+        euc_dist.append(pairwise_distances([notes[j][1:]], [melody_chords[i][1:]])[0][0])
+      if euclidian_distance_match_type == 'Pitches':
+        euc_dist.append(pairwise_distances([[notes[j][2]]], [[melody_chords[i][2]]])[0][0])
     
-    max_cos_sims.append(max(cos_sim))
-    avg_cos_sims.append(sum(cos_sim) / len(cos_sim))
-    med_cos_sims.append(statistics.median(cos_sim))
+    min_euc_dist.append(min(euc_dist))
+    avg_euc_dist.append(sum(euc_dist) / len(euc_dist))
+    med_euc_dist.append(statistics.median(euc_dist))
 
-  if cosine_similarity_type == 'Max':
-    out = notes[max_cos_sims.index(max(max_cos_sims))]
+  if euclidian_distance_type == 'Min':
+    out = notes[min_euc_dist.index(min(min_euc_dist))]
   
-  if cosine_similarity_type == 'Mean':
-    out = notes[avg_cos_sims.index(max(avg_cos_sims))]
+  if euclidian_distance_type == 'Mean':
+    out = notes[avg_euc_dist.index(min(avg_euc_dist))]
 
-  if cosine_similarity_type == 'Median':
-    out = notes[med_cos_sims.index(max(med_cos_sims))]
+  if euclidian_distance_type == 'Median':
+    out = notes[med_euc_dist.index(min(med_euc_dist))]
 
   out1.extend(out)
   out1.extend([127])
